@@ -8,7 +8,7 @@ const morgan = require('morgan');
 // Database Client
 const client = require('./lib/client');
 // Services
-const charactersApi = require('./lib/characters-api');
+const quotesApi = require('./lib/quotes-api');
 
 // Auth
 const ensureAuth = require('./lib/auth/ensure-auth');
@@ -48,13 +48,13 @@ app.use('/api/auth', authRoutes);
 app.use('/api', ensureAuth);
 
 // *** API Routes ***
-app.get('/api/characters', async(req, res) => {
+app.get('/api/quotes', async (req, res) => {
 
     try {
         const query = req.query;
 
         // get the data from the third party API
-        const characters = await charactersApi.get(query.search, query.page);
+        const quotes = await quotesApi.get(query.search, query.page);
 
         // This part is coded after initial functionality is complete...
 
@@ -73,10 +73,10 @@ app.get('/api/characters', async(req, res) => {
         }, {});
 
         // adjust the favorite property of each item:
-        characters.forEach(quote => quote.isFavorite = lookup[characters.id] || false);
+        quotes.forEach(quote => quote.isFavorite = lookup[quote.id] || false);
 
         // Ship it!
-        res.json(characters);
+        res.json(quotes);
     }
     catch (err) {
         console.log(err);
@@ -86,7 +86,7 @@ app.get('/api/characters', async(req, res) => {
     }
 });
 
-app.get('/api/me/favorites', async(req, res) => {
+app.get('/api/me/favorites', async (req, res) => {
     // Get the favorites _for the calling user_
     try {
         const result = await client.query(`
@@ -112,7 +112,7 @@ app.get('/api/me/favorites', async(req, res) => {
 
 const stringHash = require('string-hash');
 
-app.post('/api/me/favorites', async(req, res) => {
+app.post('/api/me/favorites', async (req, res) => {
     // Add a favorite _for the calling user_
     try {
         const quote = req.body;
